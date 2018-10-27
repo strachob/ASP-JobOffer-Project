@@ -1,0 +1,9 @@
+﻿@model List<JobOffer> 
+
+<ul>
+    @foreach (var offer in Model){
+
+        <li>@offer.ID @Html.ActionLink(offer.JobTitle, "Details", new {ID = offer.ID })</li>
+
+    }
+</ul>

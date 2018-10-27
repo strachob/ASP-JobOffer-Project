@@ -1,0 +1,11 @@
+﻿@model JobOffer
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>@Model.JobTitle</h2>
+
+
+<p>@Model.JobDescription</p>
+<p>  @Html.ActionLink("Wróć do wszystkich ofert", "Index")</p>
+
