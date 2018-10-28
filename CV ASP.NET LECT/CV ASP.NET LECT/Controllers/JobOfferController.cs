@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using CV_ASP.NET_LECT.Models;
+using System.Net;
 
 namespace CV_ASP.NET_LECT.Controllers
 {
@@ -11,31 +13,127 @@ namespace CV_ASP.NET_LECT.Controllers
     public class JobOfferController : Controller
     {
         private static List<JobOffer> _offers = new List<JobOffer> {
-            new JobOffer{ID = 1, JobTitle="Junior Developer", JobDescription="The Junior Software Developer is part of an agile development team building and working on"+
-                                                                               "enterprise grade software systems on top of the Microsoft .NET development stack. The Junior"+
-                                                                                "Software Developer is involved in all areas of development from design to development to testing"},
-            new JobOffer{ID = 2, JobTitle="Backend Developer" , JobDescription="If you have excellent programming skills and a passion for developing applications or improving"+ 
-                                                                                "existing ones, we would like to meet you. As a Back-end developer, you’ll work closely with our "+ 
-                                                                                "engineers to ensure system consistency and improve user experience."},
-            new JobOffer{ID = 3, JobTitle="Database Administrator", JobDescription="Responsibility as a database administrator (DBA) will be the performance, "+
-                                                                                   "integrity and security of a database. You'll be involved in the planning and development "+
-                                                                                   "of the database, as well as in troubleshooting any issues on behalf of the users."},
-            new JobOffer{ID = 4, JobTitle="Business Analyst", JobDescription="Business Analyst who will be the vital link between our information technology capacity and our"+
-                                                                             " business objectives by supporting and ensuring the successful completion of analytical, building,"+
-                                                                             " testing and deployment tasks of our software product’s features."},
-            new JobOffer{ID = 5, JobTitle="Junior Scrum Master", JobDescription="Scrum master is known as guardian of Scrum Team, someone that resolves impediment and have control"+
-                                                                                " over the scrum processes. Those are major responsibilities that come in to mind when thinking of a scrum master."+
-                                                                                " Scrum master job description is everything from coaching team about agile scrum to delivering successful deliverables."},
+            new JobOffer{
+                ID = 1,
+                JobTitle ="Junior Developer",
+                JobDescription ="The Junior Software Developer is part of an agile development team building and working on"+
+                                "enterprise grade software systems on top of the Microsoft .NET development stack. The Junior"+
+                                "Software Developer is involved in all areas of development from design to development to testing",
+                Company = _companies.FirstOrDefault(c => c.Name == "Microsoft"),
+                Created = DateTime.Now.AddDays(-14),
+                Location = "Dublin, Irlandia",
+                SalaryFrom = 5000,
+                SalaryTo = 8000,
+                ValidUntil = DateTime.Now.AddDays(14)
+            },
+            new JobOffer{
+                ID = 3,
+                JobTitle ="Database Administrator",
+                JobDescription ="Responsibility as a database administrator (DBA) will be the performance, "+
+                                "integrity and security of a database. You'll be involved in the planning and development "+
+                                "of the database, as well as in troubleshooting any issues on behalf of the users.",
+                Company = _companies.FirstOrDefault(c => c.Name == "KMD"),
+                Created = DateTime.Now.AddDays(-2),
+                Location = "Warszawa, Polska",
+                SalaryFrom = 7500,
+                SalaryTo = 10000,
+                ValidUntil = DateTime.Now.AddDays(20)
+            },
         };
 
-        public IActionResult Index()
+        private static List<Company> _companies = new List<Company> {
+            new Company(){Id = 1, Name = "Citi" },
+            new Company(){Id = 2, Name = "KMD" },
+            new Company(){Id = 3, Name = "Millenium" },
+            new Company(){Id = 4, Name = "Microsoft" },
+        };
+
+
+        [HttpGet]
+        public IActionResult Index([FromQuery(Name = "search")] string searchString)
         {
-            return View(_offers);
+            if (String.IsNullOrEmpty(searchString))
+            {
+                return View(_offers);
+            }
+            List<JobOffer> searchResult = _offers.FindAll(o => o.JobTitle.Contains(searchString));
+            return View(searchResult);
         }
 
         public IActionResult Details(int ID)
         {  
             return View(_offers.FirstOrDefault(o => o.ID == ID));
+        }
+
+        public ActionResult Edit(int? id)
+        {
+            if(id == null){
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            }
+            var offer = _offers.Find(j => j.ID == id);
+            if(offer == null){
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+            }
+            return View(offer);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(JobOffer offer)
+        {
+            if (!ModelState.IsValid){
+                return View();
+            }
+            var newOffer = _offers.Find(j => j.ID == offer.ID);
+            newOffer.JobTitle = offer.JobTitle;
+            return RedirectToAction("Details", new { id = offer.ID });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Delete(int? id)
+        {
+            if (id == null){
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            }
+            _offers.RemoveAll(j => j.ID == id);
+            return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> Create()
+        {
+            var model = new JobOfferCreateView
+            {
+                Companies = _companies
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(JobOfferCreateView view)
+        {
+            if (!ModelState.IsValid)
+            {
+                view.Companies = _companies;
+                return View(view);
+            }
+            var id = _companies.Max(j => j.Id) + 1;
+            _offers.Add(new JobOffer
+                {
+                    ID = id,
+                    CompanyId = view.CompanyId,
+                    Company = _companies.FirstOrDefault(c => c.Id == view.CompanyId),
+                    JobDescription = view.JobDescription,
+                    JobTitle = view.JobTitle,
+                    Location = view.Location,
+                    SalaryFrom = view.SalaryFrom,
+                    SalaryTo = view.SalaryTo,
+                    ValidUntil = view.ValidUntil,
+                    Created = DateTime.Now
+                }
+            );
+            return RedirectToAction("Index");
+
         }
     }
 }
