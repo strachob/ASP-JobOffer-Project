@@ -1,11 +1,60 @@
 ﻿@model JobOffer
 @{
     ViewData["Title"] = "Details";
+    ViewBag.Title = "Offer";
 }
 
-<h2>@Model.JobTitle</h2>
-
-
-<p>@Model.JobDescription</p>
-<p>  @Html.ActionLink("Wróć do wszystkich ofert", "Index")</p>
-
+<div class="row page-box">
+    <h1>@Model.JobTitle</h1>
+    <div class="col-sm-8">
+        <div class="offer-description" id="previewMarkdown">
+            @Model.JobDescription
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="offer-details">
+            <div>
+                <label>Company:</label>
+                <span>@Model.Company.Name</span>
+            </div>
+            <div>
+                <label>Location:</label>
+                <span>@Model.Location</span>
+            </div>
+            @if (Model.SalaryFrom.HasValue)
+            {
+                <div>
+                    <label>Salary from:</label>
+                    <span>@Model.SalaryFrom (PLN)</span>
+                </div>
+            }
+            @if (Model.SalaryTo.HasValue)
+            {
+                <div>
+                    <label>Salary to:</label>
+                    <span>@Model.SalaryTo</span>
+                </div>
+            }
+            <div>
+                <label>Created:</label>
+                <span>@Model.Created</span>
+            </div>
+            @if (Model.ValidUntil.HasValue)
+            {
+                <div>
+                    <label>Valid:</label>
+                    <span>@Model.ValidUntil.Value.Subtract(DateTime.Now).Days days (@Model.ValidUntil)</span>
+                </div>
+            }
+            <div>
+                @Html.ActionLink("Edit","Edit", new { id = Model.ID}, new {@class="btn btn-primary" })
+                @using (Html.BeginForm("Delete", "JobOffer", new { Model.ID }, FormMethod.Post, null, new { style = "display:inline;" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                }
+            </div>
+        </div>
+    </div>
+    @Html.ActionLink("Go back to list of offers", "Index", "JobOffer", null, new {@class="btn btn-primary" })
+</div>

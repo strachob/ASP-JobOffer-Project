@@ -12,6 +12,15 @@ namespace CV_ASP.NET_LECT.Controllers
     [Route("[controller]/[action]")]
     public class JobOfferController : Controller
     {
+
+
+        private static List<Company> _companies = new List<Company> {
+            new Company(){Id = 1, Name = "Citi" },
+            new Company(){Id = 2, Name = "KMD" },
+            new Company(){Id = 3, Name = "Millenium" },
+            new Company(){Id = 4, Name = "Microsoft" },
+        };
+
         private static List<JobOffer> _offers = new List<JobOffer> {
             new JobOffer{
                 ID = 1,
@@ -27,7 +36,7 @@ namespace CV_ASP.NET_LECT.Controllers
                 ValidUntil = DateTime.Now.AddDays(14)
             },
             new JobOffer{
-                ID = 3,
+                ID = 2,
                 JobTitle ="Database Administrator",
                 JobDescription ="Responsibility as a database administrator (DBA) will be the performance, "+
                                 "integrity and security of a database. You'll be involved in the planning and development "+
@@ -38,15 +47,9 @@ namespace CV_ASP.NET_LECT.Controllers
                 SalaryFrom = 7500,
                 SalaryTo = 10000,
                 ValidUntil = DateTime.Now.AddDays(20)
-            },
+            }
         };
-
-        private static List<Company> _companies = new List<Company> {
-            new Company(){Id = 1, Name = "Citi" },
-            new Company(){Id = 2, Name = "KMD" },
-            new Company(){Id = 3, Name = "Millenium" },
-            new Company(){Id = 4, Name = "Microsoft" },
-        };
+    
 
 
         [HttpGet]
