@@ -26,5 +26,7 @@ namespace CV_ASP.NET_LECT.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyy-MM-dd}")]
         [Display(Name = "Valid until")]
         public DateTime? ValidUntil { get; set; }
+
+        public List<JobApplication> JobApplications { get; set; } = new List<JobApplication>();
     }
 }

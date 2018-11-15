@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using CV_ASP.NET_LECT.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 
 namespace CV_ASP.NET_LECT
 {
@@ -33,6 +35,9 @@ namespace CV_ASP.NET_LECT
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            var connection = @"Server=(localdb)\MSSQLLocalDB;Database=JobOfferTest;Trusted_Connection=True;";
+            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
