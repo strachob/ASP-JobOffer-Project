@@ -5,7 +5,7 @@
 <div class="row page-box">
     <div>
         <h2>Companies List</h2>
-        @using (Html.BeginForm("Index", "Company", FormMethod.Get))
+        @using (Html.BeginForm("CompaniesList", "JobOffer", FormMethod.Get))
         {
             <div class="input-group col-md-12" style="margin-bottom: 14px">
                 <input type="text" class="form-control" placeholder="Enter company name here..."
@@ -31,7 +31,7 @@
                         <td>@company.Id</td>
                         <td>@company.Name</td>
                         <td>
-                            @using (Html.BeginForm("Delete", "Company", new { company.Id }, FormMethod.Post, null, new { style = "display:inline;" }))
+                            @using (Html.BeginForm("DeleteCompany", "JobOffer", new { company.Id }, FormMethod.Post, null, new { style = "display:inline;" }))
                             {
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-danger">Delete</button>

@@ -6,41 +6,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using CV_ASP.NET_LECT.Models;
 using System.Net;
+using CV_ASP.NET_LECT.EntityFramework;
 
 namespace CV_ASP.NET_LECT.Controllers
 {
     [Route("[controller]/[action]")]
     public class JobOfferController : Controller
     {
-        
-        private static List<JobOffer> _offers = new List<JobOffer> {
-            new JobOffer{
-                ID = 1,
-                JobTitle ="Junior Developer",
-                JobDescription ="The Junior Software Developer is part of an agile development team building and working on"+
-                                "enterprise grade software systems on top of the Microsoft .NET development stack. The Junior"+
-                                "Software Developer is involved in all areas of development from design to development to testing",
-                Company = CompanyController._companies.FirstOrDefault(c => c.Name == "Microsoft"),
-                Created = DateTime.Now.AddDays(-14),
-                Location = "Dublin, Irlandia",
-                SalaryFrom = 5000,
-                SalaryTo = 8000,
-                ValidUntil = DateTime.Now.AddDays(14)
-            },
-            new JobOffer{
-                ID = 2,
-                JobTitle ="Database Administrator",
-                JobDescription ="Responsibility as a database administrator (DBA) will be the performance, "+
-                                "integrity and security of a database. You'll be involved in the planning and development "+
-                                "of the database, as well as in troubleshooting any issues on behalf of the users.",
-                Company = CompanyController._companies.FirstOrDefault(c => c.Name == "KMD"),
-                Created = DateTime.Now.AddDays(-2),
-                Location = "Warszawa, Polska",
-                SalaryFrom = 7500,
-                SalaryTo = 10000,
-                ValidUntil = DateTime.Now.AddDays(20)
+
+        private readonly DataContext _context;
+        private static List<JobOffer> _offers;
+        private static List<Company> _companies;
+
+        public JobOfferController (DataContext context){
+            _context = context;
+            _offers = _context.JobOffers.ToList();
+            _companies = _context.Companies.ToList();
+            foreach (JobOffer offer in _offers)
+            {
+                offer.Company = _companies.Find(c => c.Id == offer.CompanyId);
             }
-        };
+        }
+        
         private static List<JobApplication> _applications = new List<JobApplication> {
             new JobApplication
             {
@@ -117,9 +104,31 @@ namespace CV_ASP.NET_LECT.Controllers
         {
             var model = new JobOfferCreateView
             {
-                Companies = CompanyController._companies
+                Companies = _companies
             };
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult CompaniesList([FromQuery(Name = "search")] string searchString)
+        {
+            if (String.IsNullOrEmpty(searchString))
+            {
+                return View(_companies);
+            }
+            List<Company> searchResult = _companies.FindAll(o => o.Name.Contains(searchString));
+            return View(searchResult);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DeleteCompany(int? id)
+        {
+            if (id == null)
+            {
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            }
+            _companies.RemoveAll(j => j.Id == id);
+            return RedirectToAction("CompaniesList");
         }
 
         [HttpPost]
@@ -128,24 +137,24 @@ namespace CV_ASP.NET_LECT.Controllers
         {
             if (!ModelState.IsValid)
             {
-                view.Companies = CompanyController._companies;
+                view.Companies = _companies;
                 return View(view);
             }
-            var id = CompanyController._companies.Max(j => j.Id) + 1;
-            _offers.Add(new JobOffer
-                {
-                    ID = id,
-                    CompanyId = view.CompanyId,
-                    Company = CompanyController._companies.FirstOrDefault(c => c.Id == view.CompanyId),
-                    JobDescription = view.JobDescription,
-                    JobTitle = view.JobTitle,
-                    Location = view.Location,
-                    SalaryFrom = view.SalaryFrom,
-                    SalaryTo = view.SalaryTo,
-                    ValidUntil = view.ValidUntil,
-                    Created = DateTime.Now
-                }
-            );
+
+            JobOffer jo = new JobOffer
+            {
+                CompanyId = view.CompanyId,
+                Company = _companies.FirstOrDefault(c => c.Id == view.CompanyId),
+                JobDescription = view.JobDescription,
+                JobTitle = view.JobTitle,
+                Location = view.Location,
+                SalaryFrom = view.SalaryFrom,
+                SalaryTo = view.SalaryTo,
+                ValidUntil = view.ValidUntil,
+                Created = DateTime.Now
+            };
+            _context.JobOffers.Add(jo);
+            await _context.SaveChangesAsync();
             return RedirectToAction("Index");
 
         }
@@ -179,17 +188,17 @@ namespace CV_ASP.NET_LECT.Controllers
                 view.JobOffer = _offers.Find(j => j.ID == view.OfferId);
                 return View(view);
             }
-            var id = _applications.Max(j => j.Id) + 1;
-            _applications.Add(new JobApplication
+            JobApplication ja = new JobApplication
             {
-                Id = id,
                 OfferId = view.OfferId,
                 FirstName = view.FirstName,
                 LastName = view.LastName,
                 PhoneNumber = view.PhoneNumber,
                 EmailAddress = view.EmailAddress,
                 ApplicationDescription = view.ApplicationDescription
-            });
+            };
+            _context.JobApplications.Add(ja);
+            await _context.SaveChangesAsync();
             return RedirectToAction("Edit", new { id = view.OfferId });
         }
 
