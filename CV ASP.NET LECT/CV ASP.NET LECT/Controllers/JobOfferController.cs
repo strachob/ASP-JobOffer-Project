@@ -41,8 +41,22 @@ namespace CV_ASP.NET_LECT.Controllers
                 ValidUntil = DateTime.Now.AddDays(20)
             }
         };
-    
-
+        private static List<JobApplication> _applications = new List<JobApplication> {
+            new JobApplication
+            {
+                Id = 1,
+                OfferId = 2,
+                FirstName = "Bartek",
+                LastName = "Strachowski",
+                PhoneNumber = "124294120",
+                EmailAddress = "b.stra@gmail.com",
+                ApplicationDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit,"+
+                                         " sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,"+
+                                         " quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure"+"" +
+                                         " dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."+
+                                         " Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+            }
+        };
 
         [HttpGet]
         public IActionResult Index([FromQuery(Name = "search")] string searchString)
@@ -56,8 +70,13 @@ namespace CV_ASP.NET_LECT.Controllers
         }
 
         public IActionResult Details(int ID)
-        {  
-            return View(_offers.FirstOrDefault(o => o.ID == ID));
+        {
+            var model = new JobOfferDetailsView
+            {
+                JobOffer = _offers.FirstOrDefault(o => o.ID == ID),
+                JobApplications = _applications.FindAll(j => j.OfferId == ID)
+            };
+            return View(model);
         }
 
         public ActionResult Edit(int? id)
@@ -129,6 +148,49 @@ namespace CV_ASP.NET_LECT.Controllers
             );
             return RedirectToAction("Index");
 
+        }
+        
+        public ActionResult Apply(int? id)
+        {
+            if (id == null)
+            {
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            }
+            var offer = _offers.Find(j => j.ID == id);
+            if (offer == null)
+            {
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+            }
+
+            var model = new JobApplicationApplyView
+            {
+                JobOffer = offer,
+                OfferId = offer.ID
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Apply(JobApplicationApplyView view)
+        {
+            if (!ModelState.IsValid)
+            {
+                view.JobOffer = _offers.Find(j => j.ID == view.OfferId);
+                return View(view);
+            }
+            var id = _applications.Max(j => j.Id) + 1;
+            _applications.Add(new JobApplication
+            {
+                Id = id,
+                OfferId = view.OfferId,
+                FirstName = view.FirstName,
+                LastName = view.LastName,
+                PhoneNumber = view.PhoneNumber,
+                EmailAddress = view.EmailAddress,
+                ApplicationDescription = view.ApplicationDescription
+            });
+            return RedirectToAction("Edit", new { id = view.OfferId });
         }
     }
 }
