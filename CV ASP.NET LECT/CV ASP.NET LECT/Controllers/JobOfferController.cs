@@ -12,15 +12,7 @@ namespace CV_ASP.NET_LECT.Controllers
     [Route("[controller]/[action]")]
     public class JobOfferController : Controller
     {
-
-
-        private static List<Company> _companies = new List<Company> {
-            new Company(){Id = 1, Name = "Citi" },
-            new Company(){Id = 2, Name = "KMD" },
-            new Company(){Id = 3, Name = "Millenium" },
-            new Company(){Id = 4, Name = "Microsoft" },
-        };
-
+        
         private static List<JobOffer> _offers = new List<JobOffer> {
             new JobOffer{
                 ID = 1,
@@ -28,7 +20,7 @@ namespace CV_ASP.NET_LECT.Controllers
                 JobDescription ="The Junior Software Developer is part of an agile development team building and working on"+
                                 "enterprise grade software systems on top of the Microsoft .NET development stack. The Junior"+
                                 "Software Developer is involved in all areas of development from design to development to testing",
-                Company = _companies.FirstOrDefault(c => c.Name == "Microsoft"),
+                Company = CompanyController._companies.FirstOrDefault(c => c.Name == "Microsoft"),
                 Created = DateTime.Now.AddDays(-14),
                 Location = "Dublin, Irlandia",
                 SalaryFrom = 5000,
@@ -41,7 +33,7 @@ namespace CV_ASP.NET_LECT.Controllers
                 JobDescription ="Responsibility as a database administrator (DBA) will be the performance, "+
                                 "integrity and security of a database. You'll be involved in the planning and development "+
                                 "of the database, as well as in troubleshooting any issues on behalf of the users.",
-                Company = _companies.FirstOrDefault(c => c.Name == "KMD"),
+                Company = CompanyController._companies.FirstOrDefault(c => c.Name == "KMD"),
                 Created = DateTime.Now.AddDays(-2),
                 Location = "Warszawa, Polska",
                 SalaryFrom = 7500,
@@ -106,7 +98,7 @@ namespace CV_ASP.NET_LECT.Controllers
         {
             var model = new JobOfferCreateView
             {
-                Companies = _companies
+                Companies = CompanyController._companies
             };
             return View(model);
         }
@@ -117,15 +109,15 @@ namespace CV_ASP.NET_LECT.Controllers
         {
             if (!ModelState.IsValid)
             {
-                view.Companies = _companies;
+                view.Companies = CompanyController._companies;
                 return View(view);
             }
-            var id = _companies.Max(j => j.Id) + 1;
+            var id = CompanyController._companies.Max(j => j.Id) + 1;
             _offers.Add(new JobOffer
                 {
                     ID = id,
                     CompanyId = view.CompanyId,
-                    Company = _companies.FirstOrDefault(c => c.Id == view.CompanyId),
+                    Company = CompanyController._companies.FirstOrDefault(c => c.Id == view.CompanyId),
                     JobDescription = view.JobDescription,
                     JobTitle = view.JobTitle,
                     Location = view.Location,
