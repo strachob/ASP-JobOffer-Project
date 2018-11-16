@@ -1,0 +1,27 @@
+﻿@model JobApplication
+@{
+    ViewData["Title"] = "ApplicationDetails";
+}
+
+<div class="row page-box">
+    <h1 class="text-primary">Application for: @Model.FirstName @Model.LastName</h1>
+    <div class="col-sm-8">
+        <div class="offer-details">
+            <div>
+                <label>Phone number:</label>
+                <span>@Model.PhoneNumber</span>
+            </div>
+            <div>
+                <label>Email Adress:</label>
+                <span>@Model.EmailAddress</span>
+            </div>
+            <div>
+                <label>Application Letter:</label>
+                <span>@Model.ApplicationDescription</span>
+            </div>
+        </div>
+    </div>
+</div>
+<hr/>
+@Html.ActionLink("Go back to offer details", "Details", "JobOffer", new { ID = Model.OfferId }, new { @class = "btn btn-primary" })
+

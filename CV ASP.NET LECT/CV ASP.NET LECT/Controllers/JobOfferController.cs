@@ -192,5 +192,11 @@ namespace CV_ASP.NET_LECT.Controllers
             });
             return RedirectToAction("Edit", new { id = view.OfferId });
         }
+
+        public IActionResult ApplicationDetails(int ID)
+        {
+            return View(_applications.FirstOrDefault(j => j.Id == ID));
+        }
+
     }
 }
