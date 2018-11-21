@@ -185,7 +185,7 @@ namespace CV_ASP.NET_LECT.Controllers
             };
             _context.JobApplications.Add(ja);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Edit", new { id = view.OfferId });
+            return RedirectToAction("Details", new { id = view.OfferId });
         }
 
         public IActionResult ApplicationDetails(int ID)
