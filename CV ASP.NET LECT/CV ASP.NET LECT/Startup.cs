@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using CV_ASP.NET_LECT.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace CV_ASP.NET_LECT
 {
@@ -38,6 +39,11 @@ namespace CV_ASP.NET_LECT
 
             var connection = @"Server=(localdb)\MSSQLLocalDB;Database=JobOfferTest;Trusted_Connection=True;";
             services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +62,13 @@ namespace CV_ASP.NET_LECT
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
             app.UseMvc(routes =>
             {
