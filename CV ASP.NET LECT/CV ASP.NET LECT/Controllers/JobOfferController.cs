@@ -13,7 +13,6 @@ namespace CV_ASP.NET_LECT.Controllers
     [Route("[controller]/[action]")]
     public class JobOfferController : Controller
     {
-
         private readonly DataContext _context;
         private static List<JobOffer> _offers;
         private static List<Company> _companies;
@@ -188,6 +187,7 @@ namespace CV_ASP.NET_LECT.Controllers
             return RedirectToAction("Details", new { id = view.OfferId });
         }
 
+        [HttpGet]
         public IActionResult ApplicationDetails(int ID)
         {
             return View(_applications.FirstOrDefault(j => j.Id == ID));

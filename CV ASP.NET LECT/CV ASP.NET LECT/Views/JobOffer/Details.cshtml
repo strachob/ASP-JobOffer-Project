@@ -57,26 +57,78 @@
             </div>
         </div>
     </div>
-    <hr/>
-    <h2>Currently Applying</h2>
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Phone</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var application in Model.JobApplications.OrderBy(o => o.Id))
-            {
-                <tr>
-                    <td>@Html.ActionLink(application.FirstName + " " + application.LastName, "ApplicationDetails", new { id = application.Id })</td>
-                    <td>@application.EmailAddress</td>
-                    <td>@application.PhoneNumber</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    @Html.ActionLink("Go back to list of offers", "Index", "JobOffer", null, new { @class = "btn btn-primary" })
+
 </div>
+<hr/>
+<h2>Currently Applying</h2>
+<div id="updatePanel">
+</div>
+@Html.ActionLink("Go back to list of offers", "Index", "JobOffer", null, new { @class = "btn btn-primary" })
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var currentPage = 1;
+            fetchData(1);
+            $('#updatePanel').on('click', '.footerContent a', function (e) {
+                e.preventDefault();
+                var pageNo = parseInt($(this).html());
+                currentPage = pageNo;
+                fetchData(currentPage);
+            });
+            function fetchData(pageNo) {
+                var $loading = "<div class='loading'>Please wait...</div>";
+                $('#updatePanel').prepend($loading);
+                $.ajax({
+                    url: '/api/Applications',
+                    type: 'GET',
+                    data: {
+                        offerID: @Model.JobOffer.ID,
+                        pageNo: pageNo
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var $table = $('<table/>').addClass('table table-striped table-hover table-bordered');
+                        var $header = $('<thead/>').html('<tr><th>Name</th><th>Email</th><th>Phone</th></tr>');
+                        $table.append($header);
+                        console.log(data)
+                        $.each(data.jobApplications, function (i, emp) {
+                            var $row = $('<tr/>');
+                            $row.append($('<td><a href="/JobOffer/ApplicationDetails?ID=' + emp.id+'">'+emp.firstName + " "+ emp.lastName+'</a></td>'));
+                            $row.append($('<td/>').html(emp.emailAddress));
+                            $row.append($('<td/>').html(emp.phoneNumber));
+                            $table.append($row);
+                        });
+
+                        var totalPage = parseInt(data.totalPage);
+                        var $footer = $('<tr/>');
+                        var $footerTD = $('<td/>').attr('colspan', 4).addClass('footerContent');
+
+                        if (totalPage > 0) {
+                            for (var i = 1; i <= totalPage; i++) {
+                                var $page = $('<span/>').addClass((i == currentPage) ? "current" : "");
+                                $page.html((i == currentPage) ? i : "<a href='#'>" + i + "</a>");
+                                $footerTD.append($page);
+                            }
+                            $footer.append($footerTD);
+                        }
+                        $table.append($footer);
+
+                        $('#updatePanel').html($table);
+                    },
+                    error: function () {
+                        alert('Error! Please try again.');
+                    },
+                    remove: function () {}
+
+                }).done(function () {
+
+                    $loading.remove();
+                });
+            }
+        });
+    </script>
+}
+
+<link rel="stylesheet" type="text/css" href="~/css/applications.css">
+
