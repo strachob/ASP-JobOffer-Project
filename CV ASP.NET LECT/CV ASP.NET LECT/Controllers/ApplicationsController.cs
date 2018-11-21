@@ -24,7 +24,6 @@ namespace CV_ASP.NET_LECT.Controllers
         [HttpGet]
         public JobApplicationsViewModel GetApplications(int offerID, int pageNo = 1)
         {
-            Console.WriteLine("Dzień dobry");
             int totalPage, totalRecord, pageSize;
             pageSize = 4;
 

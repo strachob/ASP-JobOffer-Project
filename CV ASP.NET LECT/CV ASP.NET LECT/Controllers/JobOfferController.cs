@@ -31,6 +31,7 @@ namespace CV_ASP.NET_LECT.Controllers
     
 
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index([FromQuery(Name = "search")] string searchString)
         {
             if (String.IsNullOrEmpty(searchString))
@@ -41,6 +42,8 @@ namespace CV_ASP.NET_LECT.Controllers
             return View(searchResult);
         }
 
+        [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Details(int ID)
         {
             var model = new JobOfferDetailsView
@@ -51,6 +54,8 @@ namespace CV_ASP.NET_LECT.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ActionResult Edit(int? id)
         {
             if(id == null){
@@ -65,6 +70,7 @@ namespace CV_ASP.NET_LECT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Edit(JobOffer offer)
         {
             if (!ModelState.IsValid){
@@ -76,6 +82,7 @@ namespace CV_ASP.NET_LECT.Controllers
         }
 
         [HttpPost]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null){
@@ -85,6 +92,8 @@ namespace CV_ASP.NET_LECT.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Create()
         {
             var model = new JobOfferCreateView
@@ -95,6 +104,7 @@ namespace CV_ASP.NET_LECT.Controllers
         }
 
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult CompaniesList([FromQuery(Name = "search")] string searchString)
         {
             if (String.IsNullOrEmpty(searchString))
@@ -106,6 +116,7 @@ namespace CV_ASP.NET_LECT.Controllers
         }
 
         [HttpPost]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> DeleteCompany(int? id)
         {
             if (id == null)
@@ -118,6 +129,7 @@ namespace CV_ASP.NET_LECT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Create(JobOfferCreateView view)
         {
             if (!ModelState.IsValid)
@@ -144,6 +156,8 @@ namespace CV_ASP.NET_LECT.Controllers
 
         }
         
+        [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ActionResult Apply(int? id)
         {
             if (id == null)
@@ -166,6 +180,7 @@ namespace CV_ASP.NET_LECT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Apply(JobApplicationApplyView view)
         {
             if (!ModelState.IsValid)
@@ -188,6 +203,7 @@ namespace CV_ASP.NET_LECT.Controllers
         }
 
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult ApplicationDetails(int ID)
         {
             return View(_applications.FirstOrDefault(j => j.Id == ID));
