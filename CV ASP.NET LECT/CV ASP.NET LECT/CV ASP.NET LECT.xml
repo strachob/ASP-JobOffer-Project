@@ -4,5 +4,11 @@
         <name>CV ASP.NET LECT</name>
     </assembly>
     <members>
+        <member name="M:CV_ASP.NET_LECT.Controllers.ApplicationsController.GetApplications(System.Int32,System.Int32)">
+            <summary>
+            Get Applications with put offerID and pageNumber
+            </summary>
+            <remarks>Sample remarks for get one element</remarks>
+        </member>
     </members>
 </doc>

@@ -21,6 +21,10 @@ namespace CV_ASP.NET_LECT.Controllers
         }
 
         // GET: api/Applications
+        /// <summary>
+        /// Get Applications with specific offerID and from selected pageNumber
+        /// </summary>
+        /// <remarks>Standard pageNo is 1 and pageSize is 4</remarks>
         [HttpGet]
         public JobApplicationsViewModel GetApplications(int offerID, int pageNo = 1)
         {
