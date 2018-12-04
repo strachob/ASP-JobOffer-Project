@@ -6,9 +6,15 @@
     <members>
         <member name="M:CV_ASP.NET_LECT.Controllers.ApplicationsController.GetApplications(System.Int32,System.Int32)">
             <summary>
-            Get Applications with put offerID and pageNumber
+            Get Applications with specific offerID and from selected pageNumber
             </summary>
-            <remarks>Sample remarks for get one element</remarks>
+            <remarks>Standard pageNo is 1 and pageSize is 4</remarks>
+        </member>
+        <member name="M:CV_ASP_NET_LECT.Controllers.OffersController.GetOffers(System.String,System.Int32)">
+            <summary>
+            Get all offers for now
+            </summary>
+            <remarks>Standard pageNo is 1 and pageSize is 10</remarks>
         </member>
     </members>
 </doc>

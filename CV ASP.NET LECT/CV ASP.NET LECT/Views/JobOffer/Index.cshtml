@@ -1,11 +1,11 @@
-﻿@model IEnumerable<JobOffer> 
+﻿@model string
 
 
 <div class="row page-box">
     <div>
         <h2>Job Offer list</h2>
 
-        @using (Html.BeginForm("Index", "JobOffer", FormMethod.Get))
+        @using (Html.BeginForm(null, null, FormMethod.Get))
         {
             <div class="input-group col-md-12" style="margin-bottom: 14px">
                 <input type="text" class="form-control" placeholder="Enter the offer title here.."
@@ -17,27 +17,78 @@
                 </span>
             </div>
         }
-        <table class="table table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Job Title</th>
-                    <th scope="col">Company</th>
-                    <th scope="col">Location</th>
-                    <th scope="col">Created</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var offer in Model.OrderBy(o => o.Created))
-                {
-                    <tr>
-                        <td>@Html.ActionLink(offer.JobTitle, "Details", new { id = offer.ID })</td>
-                        <td>@offer.Company.Name</td>
-                        <td>@offer.Location</td>
-                        <td>@offer.Created</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-            @Html.ActionLink("Create new job offer", "Create", "JobOffer", null, new {@class ="btn btn-primary"})
+        <div id="updatePanel">
+
+        </div>
+        @Html.ActionLink("Create new job offer", "Create", "JobOffer", null, new { @class = "btn btn-primary" })
     </div>
 </div>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var currentPage = 1;
+            fetchData(1);
+            $('#updatePanel').on('click', '.footerContent a', function (e) {
+                e.preventDefault();
+                var pageNo = parseInt($(this).html());
+                currentPage = pageNo;
+                fetchData(currentPage, $('#search').val());
+            });
+            function fetchData(pageNo) {
+                var $loading = "<div class='loading'>Please wait...</div>";
+                $('#updatePanel').prepend($loading);
+                $.ajax({
+                    url: '/api/Offers',
+                    type: 'GET',
+                    data: {
+                        pageNo: pageNo,
+                        //searchString: @Model
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var $table = $('<table/>').addClass('table table-striped table-hover table-bordered');
+                        var $header = $('<thead/>').html('<tr><th>Job Title</th><th>Company</th><th>Location</th><th>Created</th></tr>');
+                        $table.append($header);
+                        console.log(data)
+                        $.each(data.jobOffers, function (i, emp) {
+                            var $row = $('<tr/>');
+                            $row.append($('<td><a href="/JobOffer/Details?ID=' + emp.id+'">'+emp.jobTitle+'</a></td>'));
+                            $row.append($('<td/>').html(emp.company.name));
+                            $row.append($('<td/>').html(emp.location));
+                            $row.append($('<td/>').html(emp.created));
+                            $table.append($row);
+                        });
+
+                        var totalPage = parseInt(data.totalPage);
+                        var $footer = $('<tr/>');
+                        var $footerTD = $('<td/>').attr('colspan', 4).addClass('footerContent');
+
+                        if (totalPage > 0) {
+                            for (var i = 1; i <= totalPage; i++) {
+                                var $page = $('<span/>').addClass((i == currentPage) ? "current" : "");
+                                $page.html((i == currentPage) ? i : "<a href='#'>" + i + "</a>");
+                                $footerTD.append($page);
+                            }
+                            $footer.append($footerTD);
+                        }
+                        $table.append($footer);
+
+                        $('#updatePanel').html($table);
+                    },
+                    error: function () {
+                        alert('Error! Please try again.');
+                    },
+                    remove: function () {}
+
+                }).done(function () {
+
+                    $loading.remove();
+                });
+            }
+        });
+    </script>
+}
+
+<link rel="stylesheet" type="text/css" href="~/css/applications.css">

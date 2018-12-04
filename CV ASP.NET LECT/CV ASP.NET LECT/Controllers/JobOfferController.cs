@@ -28,18 +28,21 @@ namespace CV_ASP.NET_LECT.Controllers
                 offer.Company = _companies.Find(c => c.Id == offer.CompanyId);
             }
         }
-    
+
 
         [HttpGet]
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index([FromQuery(Name = "search")] string searchString)
         {
+            
             if (String.IsNullOrEmpty(searchString))
             {
-                return View(_offers);
+                return View(searchString);
             }
-            List<JobOffer> searchResult = _offers.FindAll(o => o.JobTitle.Contains(searchString));
-            return View(searchResult);
+
+            return View();
+            //List<JobOffer> searchResult = _offers.FindAll(o => o.JobTitle.Contains(searchString));
+            //return View(searchResult);
         }
 
         [HttpGet]
@@ -51,6 +54,7 @@ namespace CV_ASP.NET_LECT.Controllers
                 JobOffer = _offers.FirstOrDefault(o => o.ID == ID),
                 JobApplications = _applications.FindAll(j => j.OfferId == ID)
             };
+            Console.WriteLine(model.JobOffer);
             return View(model);
         }
 
