@@ -1,20 +1,11 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+Code written for my ASP.NET Lectures. With usage of T-SQL Databases, Entity Framework Core, Azure Active Directory, Swagger.
+It allowes user to search for Job offer suitable for him. If someone is logged as admin he can add new job offers or companies. 
+Users can also apply for a position and send their CV.
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
-
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
-
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+# Getting started
+1.	Clone repo into your own system
+2.	Run .sln file with Visual studio
+3.	Hit IISExpress
+4.	Sign Up 
+5.  Try out some options 
